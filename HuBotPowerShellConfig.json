@@ -1,0 +1,13 @@
+{
+  "HuBotPath": "C:\\my_hubot",
+  "NodeJSPath": "C:\\Program Files\\nodejs",
+  "npmPath": "C:\\Program Files\\nodejs",
+  "EnvironmentVariables": [
+    {
+      "HUBOT_IRC_SERVER": "something.irc.slack.com"
+    },
+    {
+      "HUBOT_IRC_ROOMS": "#somechannel"
+    }
+  ]
+}

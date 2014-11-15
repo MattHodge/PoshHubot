@@ -1,51 +1,54 @@
-﻿Set-StrictMode -Version Latest
-
-<#
-.Synopsis
-   Short description
-.DESCRIPTION
-   Long description
-.EXAMPLE
-   Example of how to use this cmdlet
-.EXAMPLE
-   Another example of how to use this cmdlet
-#>
-function New-HuBotEnvironmentVariable
+﻿function New-HubotEnvironmentVariable
 {
     [CmdletBinding()]
     Param
     (
         # Name of the Environment Variable to set
         [Parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [string]
         $Name,
 
         # Value of the Environment Variable
+        [Parameter(ParameterSetName='Standard',Mandatory=$true)]
         [string]
         $Value,
 
-        # Path To HuBotPowerShellConfig.json File
+        # Enable if the environment variable is secretive, for example a password. This value will be stored as a secure string
+        [Parameter(ParameterSetName='Secretive',Mandatory=$false)]
+        [switch]
+        $Secret,
+
+        # Enable if the environment variable is secretive, for example a password. This value will be stored as a secure string
+        [Parameter(ParameterSetName='Secretive',Mandatory=$true)]
         [string]
-        $configPath=[string](Split-Path -Parent $MyInvocation.MyCommand.Definition) + '\HuBotPowerShellConfig.json'
+        $SecretValue
     )
 
     Begin
     {
-        Write-Output $configPath
-
-        if(Test-Path -Path $configPath)
-        {
-            $Config = Get-Content -Path $configPath | Out-String | ConvertFrom-Json
-            Write-Output -InputObject $Config
+        if(Test-Path -Path $ConfigPath) {
+            $Config = Import-JsonConfig -ConfigPath $ConfigPath
         }
-        else
-        {
-            throw "Unable to find HuBotPowerShellConfig.json at $($configPath)"
+        else {
+            Throw "Unable to find configuration file at $($ConfigPath)"   
+        }
+
+        if($Secret) {
+            $Value = ConvertTo-SecureString -String $SecretValue -AsPlainText -Force | ConvertFrom-SecureString
         }
     }
     Process
     {
+        if($Secret) {
+            $Config.SecretEnvironmentVariables | Add-Member -MemberType NoteProperty -Name $Name -Value $Value
+        }
+        else {
+            $Config.EnvironmentVariables | Add-Member -MemberType NoteProperty -Name $Name -Value $Value
+        }
     }
     End
     {
+        Set-Content -Path $ConfigPath -Value ($Config | ConvertTo-Json | Out-String)
     }
-}
+} 

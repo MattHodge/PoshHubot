@@ -18,14 +18,16 @@
     Process
     {
         $Config.EnvironmentVariables.psobject.Properties | ForEach-Object {
-            Set-Item -Path "Env:$($_.Name)" -Value $_.Value
+            Set-Item -Path "env:$($_.Name)" -Value $_.Value
+            Write-Verbose "Imported Environment Variable env:$($_.Name)"
         }
 
         $Config.SecretEnvironmentVariables.psobject.Properties | ForEach-Object {
             $secString = ConvertTo-SecureString -String $_.Value
             $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($secString)
             $decodedString = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
-            Set-Item -Path "Env:$($_.Name)" -Value $decodedString
+            Set-Item -Path "env:$($_.Name)" -Value $decodedString
+            Write-Verbose "Imported Secret Environment Variable env:$($_.Name)"
         }
     }
     End

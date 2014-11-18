@@ -3,12 +3,7 @@
     "NodeJSPath":  "C:\\Program Files\\nodejs",
     "npmPath":  "C:\\Program Files\\nodejs",
     "EnvironmentVariables":  {
-                                 "HUBOT_IRC_SERVER":  "some server",
-                                 "ZZ_HUBOT_TEST":  "someurlorsomething"
                              },
     "SecretEnvironmentVariables":  {
-                                       "test":  "01000000d08c9ddf0115d1118c7a00c04fc297eb0100000012c6d2581ec51f428934741cd7299b9e0000000002000000000003660000c0000000100000001e9518a32e81ff977a510dbba59305fd0000000004800000a0000000100000006e3d1fc12feacc631c1c5ef245dd308208000000a4487f285d1c004c14000000e6f9331cfd60f9fb1e36dabd69508f310b2b40b6",
-                                       "ZZ_HUBOT_SECURE":  "01000000d08c9ddf0115d1118c7a00c04fc297eb0100000012c6d2581ec51f428934741cd7299b9e0000000002000000000003660000c00000001000000061779108fb4464ca87582a047a9312c80000000004800000a000000010000000d27e83316c9c3e4f63fdf7e19699654828000000930b6231bd77f04b0a82fc12afb1c42a7561210c80e099d4f9719d7b045e55884710ea423b408cf6140000006b0e05114ca7f3c7a45c243e55e8d5260a5bb4ed"
                                    }
 }
-

@@ -47,6 +47,12 @@
     Write-Verbose -Message "Installing HuBot Generator"
     Start-Process -FilePath npm -ArgumentList "install -g yo generator-hubot" -Wait -NoNewWindow
 
+    # Create bot directory
+    if (-not(Test-Path -Path $Path))
+    {
+        New-Item -Path $Path -ItemType Directory
+    }
+
     Write-Verbose -Message "Generating Bot"
     Start-Process -FilePath yo -ArgumentList "hubot --owner=""$($Owner)"" --name=""$($Name)"" --description=""$($Description)"" --adapter=""$($Adapter)""" -NoNewWindow -Wait -WorkingDirectory $Path
 }

@@ -1,16 +1,21 @@
-Hubot-PowerShell
-================
+# Hubot-PowerShell
 
-Prerequisites
-================
-* NodeJS installed
-* NPM installed
-* Git Installed
-* Coffee-Script installed `npm install -g coffee-script`
-* Hubot installed, follow the instructions https://github.com/github/hubot/blob/master/docs/README.md
+Functions to work with Hubot
 
-Functions
-================
-* Import environment variables into current session
-* Install Hubot as a service
-* Add environment variables
+# Install Hubot
+```powershell
+# Import the module
+Import-Module -Name Hubot-PowerShell
+
+# Build a hash table with configuration options for the bot
+$installBot = @{
+    'Path' = 'C:\myhubot'
+    'Name' = 'clamps'
+    'Adapter' = 'slack'
+    'Owner' = 'matt'
+    'Description' = 'my hubot!'
+}
+
+Install-HuBot @installBot -Verbose
+
+```

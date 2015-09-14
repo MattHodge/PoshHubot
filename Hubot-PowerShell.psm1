@@ -1,18 +1,23 @@
-Set-StrictMode -Version Latest
-$here = Split-Path -Parent $MyInvocation.MyCommand.Path
+#Get public and private function definition files.
+    $Public  = @( Get-ChildItem -Path $PSScriptRoot\Public\*.ps1 -ErrorAction SilentlyContinue )
+    $Private = @( Get-ChildItem -Path $PSScriptRoot\Private\*.ps1 -ErrorAction SilentlyContinue )
 
-# Determine The Path Of The Json Config File
-$configPath = [string](Split-Path -Parent $MyInvocation.MyCommand.Definition) + '\HuBotPowerShellConfig.json'
+#Dot source the files
+    Foreach($import in @($Public + $Private))
+    {
+        Try
+        {
+            . $import.fullname
+        }
+        Catch
+        {
+            Write-Error -Message "Failed to import function $($import.fullname): $_"
+        }
+    }
 
-# Internal Functions
-. $here\Functions\Internal.ps1
+# Here I might...
+    # Read in or create an initial config file and variable
+    # Export Public functions ($Public.BaseName) for WIP modules
+    # Set variables visible to the module and its functions only
 
-. $here\Functions\New-HubotEnvironmentVariable.ps1
-. $here\Functions\Import-HubotEnvironmentVariables.ps1
-
-$functionsToExport = @(
-    'New-HuBotEnvironmentVariable',
-    'Import-HubotEnvironmentVariables'
-)
-
-Export-ModuleMember -Function $functionsToExport
+Export-ModuleMember -Function $Public.Basename

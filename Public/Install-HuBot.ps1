@@ -54,5 +54,5 @@
     }
 
     Write-Verbose -Message "Generating Bot"
-    Start-Process -FilePath yo -ArgumentList "hubot --owner=""$($Owner)"" --name=""$($Name)"" --description=""$($Description)"" --adapter=""$($Adapter)""" -NoNewWindow -Wait -WorkingDirectory $Path
+    Start-Process -FilePath yo -ArgumentList "hubot --owner=""$($Owner)"" --name=""$($Name)"" --description=""$($Description)"" --adapter=""$($Adapter)"" --no-insight" -NoNewWindow -Wait -WorkingDirectory $Path
 }

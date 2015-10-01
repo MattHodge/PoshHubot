@@ -2,6 +2,22 @@
 
 Functions to work with Hubot
 
+# Create a PoshHubot Configuration File
+```powershell
+$newBot = @{
+    Path = "C:\PoshHubot\config.json"
+    BotName = 'bender'
+    BotPath = "C:\myhubot"
+    BotAdapter = 'slack'
+    BotOwner = 'matt'
+    BotDescription = 'my@email.com'
+    LogPath = "C:\PoshHubot\Logs"
+    LogLevel = 'DEBUG'
+}
+
+New-HubotConfiguration @newBot
+```
+
 # Install Hubot
 ```powershell
 # Import the module

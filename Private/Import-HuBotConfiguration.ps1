@@ -4,7 +4,7 @@
 .DESCRIPTION
    Imports a PoshHuBot configuration file.
 .EXAMPLE
-   Import-HuBotConfiguration -Path C:\PoshHuBot\config.json
+   Import-HuBotConfiguration -ConfigPath C:\PoshHuBot\config.json
 #>
 function Import-HuBotConfiguration
 {
@@ -24,12 +24,12 @@ function Import-HuBotConfiguration
         }
         })]
         [string]
-        $Path
+        $ConfigPath
     )
 
     try
     {
-        $Config = Get-Content -Path $Path | ConvertFrom-Json
+        $Config = Get-Content -Path $ConfigPath | ConvertFrom-Json
     }
     catch
     {

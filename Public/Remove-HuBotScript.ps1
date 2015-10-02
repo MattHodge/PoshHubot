@@ -17,7 +17,7 @@ function Remove-HuBotScript
         [Parameter(Mandatory=$true)]
         $Name,
 
-        # Path to Hubot json file to remove script from
+        # Path to the PoshHuBot Configuration File
         [Parameter(Mandatory=$false)]
         [ValidateScript({
         if(Test-Path -Path $_ -ErrorAction SilentlyContinue)
@@ -32,29 +32,16 @@ function Remove-HuBotScript
         [string]
         $ConfigPath,
 
-        # Path to Hubot Directory
-        [Parameter(Mandatory=$false)]
-        [ValidateScript({
-        if(Test-Path -Path $_ -ErrorAction SilentlyContinue)
-        {
-            return $true
-        }
-        else
-        {
-            throw "$($_) is not a valid path."
-        }
-        })]
-        [string]
-        $HubotPath,
-
-        # Name of script to add to the configuration file
+        # Name of script to remove from the configuration file if different
         [Parameter(Mandatory=$false)]
         $NameInConfig=$Name
     )
 
-    Start-Process -FilePath npm -ArgumentList "uninstall $($Name) --save" -Wait -NoNewWindow -WorkingDirectory $HubotPath
+    $Config = Import-HuBotConfiguration -ConfigPath $ConfigPath
 
-    [System.Collections.ArrayList]$extenalScripts = Get-Content -Path $ConfigPath | ConvertFrom-Json
+    Start-Process -FilePath npm -ArgumentList "uninstall $($Name) --save" -Wait -NoNewWindow -WorkingDirectory $Config.BotPath
+
+    [System.Collections.ArrayList]$extenalScripts = Get-Content -Path $Config.BotExternalScriptsPath | ConvertFrom-Json
 
     if ($extenalScripts -contains $NameInConfig)
     {
@@ -62,8 +49,8 @@ function Remove-HuBotScript
 
         $newConfigValue = $extenalScripts | ConvertTo-Json
 
-        Write-Verbose "Removing $($NameInConfig) from $($ConfigPath)"
+        Write-Verbose "Removing $($NameInConfig) from $($Config.BotExternalScriptsPath)"
 
-        Set-Content -Path $ConfigPath -Value $newConfigValue
+        Set-Content -Path $Config.BotExternalScriptsPath -Value $newConfigValue
     }
 }

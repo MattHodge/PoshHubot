@@ -3,31 +3,23 @@
     [CmdletBinding()]
     Param
     (
-        # Path to install your bot
+        # Path to the PoshHuBot Configuration File
         [Parameter(Mandatory=$true)]
+        [ValidateScript({
+        if(Test-Path -Path $_ -ErrorAction SilentlyContinue)
+        {
+            return $true
+        }
+        else
+        {
+            throw "$($_) is not a valid path."
+        }
+        })]
         [string]
-        $Path,
-
-        # Name of the bot
-        [Parameter(Mandatory=$true)]
-        [string]
-        $Name,
-
-        # Name of the HuBot adapter to use
-        [Parameter(Mandatory=$true)]
-        [string]
-        $Adapter,
-
-        # Owner email address
-        [Parameter(Mandatory=$true)]
-        [string]
-        $Owner,
-
-        # Description of the bot
-        [Parameter(Mandatory=$true)]
-        [string]
-        $Description 
+        $ConfigPath
     )
+
+    $Config = Import-HuBotConfiguration -ConfigPath $ConfigPath
 
     Write-Verbose -Message "Installing Chocolatey"
     iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))
@@ -48,11 +40,11 @@
     Start-Process -FilePath npm -ArgumentList "install -g yo generator-hubot" -Wait -NoNewWindow
 
     # Create bot directory
-    if (-not(Test-Path -Path $Path))
+    if (-not(Test-Path -Path $Config.BotPath))
     {
-        New-Item -Path $Path -ItemType Directory
+        New-Item -Path $Config.BotPath -ItemType Directory
     }
 
     Write-Verbose -Message "Generating Bot"
-    Start-Process -FilePath yo -ArgumentList "hubot --owner=""$($Owner)"" --name=""$($Name)"" --description=""$($Description)"" --adapter=""$($Adapter)"" --no-insight" -NoNewWindow -Wait -WorkingDirectory $Path
+    Start-Process -FilePath yo -ArgumentList "hubot --owner=""$($Config.BotOwner)"" --name=""$($Config.BotName)"" --description=""$($Config.BotDescription)"" --adapter=""$($Config.BotAdapter)"" --no-insight" -NoNewWindow -Wait -WorkingDirectory $Config.BotPath
 }

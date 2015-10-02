@@ -80,6 +80,7 @@ function New-PoshHubotConfiguration
     $params = $PSBoundParameters
 
     $params.ArgumentList = $ArgumentList
+    $params.BotExternalScriptsPath = "$($BotPath)\external-scripts.json"
     $params.EnvironmentVariables = @{
 
     }

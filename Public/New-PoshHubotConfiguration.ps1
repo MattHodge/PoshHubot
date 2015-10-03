@@ -66,7 +66,13 @@ function New-PoshHubotConfiguration
 
         # Command line argument to use when running Hubot.
         [Parameter(Mandatory=$false)]
-        $ArgumentList = "--adapater $($BotAdapter)"
+        $ArgumentList = "--adapter $($BotAdapter)",
+
+        # The maximum file size in MB of the log before it rolls over
+        [Parameter(Mandatory=$false)]
+        [ValidateRange(1,1024)]
+        [int]
+        $LogMaxFileSizeMB = 10
     )
 
     # create folder to hold configuration file
@@ -79,15 +85,34 @@ function New-PoshHubotConfiguration
 
     $params = $PSBoundParameters
 
+    # Adding manually as not a mandatory params
     $params.ArgumentList = $ArgumentList
     $params.BotExternalScriptsPath = "$($BotPath)\external-scripts.json"
-    $params.EnvironmentVariables = @{
+    $params.LogMaxFileSizeMB = $LogMaxFileSizeMB
 
+    # Create a path to the pid file
+    $params.PidPath = "$($params.BotPath)\$($params.BotName).pid"
+
+    # Add some environment variables
+    $params.EnvironmentVariables += @{ 
+        'HUBOT_ADAPTER' = $BotAdapter
     }
+
+    # Enable Debugging for Hubot
+    if ($LogLevel -eq 'DEBUG')
+    {
+        $params.EnvironmentVariables += @{ 
+            'HUBOT_LOG_LEVEL' = 'debug' 
+        }
+    }
+
+    $json = $params | ConvertTo-Json
+
+    Write-Verbose $json
 
     try
     {
-        Set-Content -Path $Path -Value ($params | ConvertTo-Json)
+        Set-Content -Path $Path -Value $json
         Write-Output "PoshHubot Configuration saved to $($Path)."
     }
     catch

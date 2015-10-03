@@ -39,6 +39,9 @@
     Write-Verbose -Message "Installing HuBot Generator"
     Start-Process -FilePath npm -ArgumentList "install -g yo generator-hubot" -Wait -NoNewWindow
 
+    Write-Verbose -Message "Installing Forever"
+    Start-Process -FilePath npm -ArgumentList "install -g forever" -Wait -NoNewWindow
+
     # Create bot directory
     if (-not(Test-Path -Path $Config.BotPath))
     {

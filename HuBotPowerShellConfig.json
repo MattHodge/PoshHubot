@@ -1,9 +1,0 @@
-{
-    "HuBotPath":  "C:\\my_hubot",
-    "NodeJSPath":  "C:\\Program Files\\nodejs",
-    "npmPath":  "C:\\Program Files\\nodejs",
-    "EnvironmentVariables":  {
-                             },
-    "SecretEnvironmentVariables":  {
-                                   }
-}

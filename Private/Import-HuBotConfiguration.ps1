@@ -29,7 +29,7 @@ function Import-HuBotConfiguration
 
     try
     {
-        $Config = Get-Content -Path $ConfigPath | ConvertFrom-Json
+        $Config = Get-Content -Path $ConfigPath -Raw | ConvertFrom-Json
     }
     catch
     {

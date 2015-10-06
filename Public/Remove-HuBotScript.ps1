@@ -44,7 +44,7 @@ function Remove-HuBotScript
         throw "Cannot find Hubot external config at $($Config.BotExternalScriptsPath)."
     }
 
-    #Start-Process -FilePath npm -ArgumentList "uninstall $($Name) --save" -Wait -NoNewWindow -WorkingDirectory $Config.BotPath
+    Start-Process -FilePath npm -ArgumentList "uninstall $($Name) --save" -Wait -NoNewWindow -WorkingDirectory $Config.BotPath
 
     [System.Collections.ArrayList]$extenalScripts = Get-Content -Path $Config.BotExternalScriptsPath -Raw | ConvertFrom-Json
 

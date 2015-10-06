@@ -54,25 +54,22 @@ function New-PoshHubotConfiguration
         [string]
         $BotDescription,
 
+        # Enables debug level logging for Hubot into the log file
+        [Parameter(Mandatory=$false)]
+        [switch]
+        $BotDebugLog = $false,
+
         # Path to write log files
         [Parameter(Mandatory=$true)]
         [string]
         $LogPath,
 
-        # The level of logging to show. This is useful when you only want to log and show error logs for instance
-        [Parameter(Mandatory=$false)]
-        [ValidateSet("DEBUG", "INFO", "WARN", "ERROR")]
-        $LogLevel= 'DEBUG',
-
         # Command line argument to use when running Hubot.
         [Parameter(Mandatory=$false)]
-        $ArgumentList = "--adapter $($BotAdapter)",
+        $ArgumentList = "--adapter $($BotAdapter)"
 
-        # The maximum file size in MB of the log before it rolls over
-        [Parameter(Mandatory=$false)]
-        [ValidateRange(1,1024)]
-        [int]
-        $LogMaxFileSizeMB = 10
+
+
     )
 
     # create folder to hold configuration file
@@ -88,7 +85,6 @@ function New-PoshHubotConfiguration
     # Adding manually as not a mandatory params
     $params.ArgumentList = $ArgumentList
     $params.BotExternalScriptsPath = "$($BotPath)\external-scripts.json"
-    $params.LogMaxFileSizeMB = $LogMaxFileSizeMB
 
     # Create a path to the pid file
     $params.PidPath = "$($params.BotPath)\$($params.BotName).pid"
@@ -99,7 +95,7 @@ function New-PoshHubotConfiguration
     }
 
     # Enable Debugging for Hubot
-    if ($LogLevel -eq 'DEBUG')
+    if ($BotDebugLog)
     {
         $params.EnvironmentVariables += @{ 
             'HUBOT_LOG_LEVEL' = 'debug' 

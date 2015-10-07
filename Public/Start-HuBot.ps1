@@ -31,6 +31,12 @@ function Start-HuBot
 
     $Config = Import-HuBotConfiguration -ConfigPath $ConfigPath
 
+    # create log folder
+    if (-not(Test-Path -Path $Config.LogPath))
+    {
+        New-Item -Path $Config.LogPath -ItemType directory | Out-Null
+    }
+
     # Add the environment variables from the config
     ForEach ($envVar in $Config.EnvironmentVariables.psobject.Properties)
     {

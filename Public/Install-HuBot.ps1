@@ -36,7 +36,7 @@
     Write-Verbose -Message "Installing CoffeeScript"
     Start-Process -FilePath npm -ArgumentList "install -g coffee-script" -Wait -NoNewWindow
 
-    Write-Verbose -Message "Installing HuBot Generator"
+    Write-Verbose -Message "Installing Hubot Generator"
     Start-Process -FilePath npm -ArgumentList "install -g yo generator-hubot" -Wait -NoNewWindow
 
     Write-Verbose -Message "Installing Forever"

@@ -60,7 +60,7 @@ function Start-HuBot
             # if it exists, get the id from it and make sure that exists too
             try 
             {
-                $huproc = Get-Process -Id $pidOfHubot
+                $huproc = Get-Process -Id $pidOfHubot -ErrorAction Stop
 
                 Write-Verbose "Hubot process path: $($huproc.Path)"
                 Write-Verbose "Hubot process pid: $($huproc.Id)"

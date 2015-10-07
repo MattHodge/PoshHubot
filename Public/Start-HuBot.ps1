@@ -31,27 +31,60 @@ function Start-HuBot
 
     $Config = Import-HuBotConfiguration -ConfigPath $ConfigPath
 
-    # Check if bot is already running, otherwise don't start it again
-    if (Test-Path -Path $Config.PidPath)
+    function Test-HubotRunning
     {
-        $pidOfHubot = Get-Content -Path $Config.PidPath
-
-        # if it exists, get the id from it and make sure that exists too
-        try 
+        [CmdletBinding()]
+        Param
+        (
+            # Path to the PoshHuBot Configuration File
+            [Parameter(Mandatory=$true)]
+            [ValidateScript({
+            if(Test-Path -Path $_ -ErrorAction SilentlyContinue)
+            {
+                return $true
+            }
+            else
+            {
+                throw "$($_) is not a valid path."
+            }
+            })]
+            [string]
+            $ConfigPath
+        )
+    
+        # Check if bot is already running, otherwise don't start it again
+        if (Test-Path -Path $Config.PidPath)
         {
-            $huproc = Get-Process -Id $pidOfHubot
+            $pidOfHubot = Get-Content -Path $Config.PidPath
 
-            Write-Verbose "Hubot process path: $($huproc.Path)"
-            Write-Verbose "Hubot process pid: $($huproc.Id)"
+            # if it exists, get the id from it and make sure that exists too
+            try 
+            {
+                $huproc = Get-Process -Id $pidOfHubot
 
-            return "Your bot $($Config.BotName) is already running. Process Id $($huproc.Id)"
+                Write-Verbose "Hubot process path: $($huproc.Path)"
+                Write-Verbose "Hubot process pid: $($huproc.Id)"
+
+                return $true
+            }
+            catch
+            {
+                Write-Verbose "No process for bot found. Will bring one up"
+                return $false
+            }
         }
-        catch
+        else
         {
-            Write-Verbose "No process for bot found. Will bring one up"
+            return $false
         }
     }
-    # if the bot isn't already running
+
+    
+    if (Test-HubotRunning -ConfigPath $ConfigPath)
+    {
+        return "Your bot $($Config.BotName) is already running."
+    }
+    # If the bot is not running
     else
     {
         # create log folder
@@ -90,29 +123,14 @@ function Start-HuBot
         Start-Sleep -Seconds 2
 
         # Verify bot started ok by checking if the pid file exists
-        if (Test-Path -Path $Config.PidPath)
+        if (Test-HubotRunning -ConfigPath $ConfigPath)
         {
-            $pidOfHubot = Get-Content -Path $Config.PidPath
-
-            # if it exists, get the id from it and make sure that exists too
-            try 
-            {
-                $huproc = Get-Process -Id $pidOfHubot
-
-                Write-Verbose "Hubot process path: $($huproc.Path)"
-                Write-Verbose "Hubot process pid: $($huproc.Id)"
-
-                return "Your bot $($Config.BotName) is running. Process Id $($huproc.Id)"
-            }
-            catch
-            {
-                throw "Could not find a process with Id $($pidOfHubot). Check $($Config.LogPath) for logs."
-            }
+            return "Your bot $($Config.BotName) is running."
         }
         else
         {
             throw "Could not find pid file at $($Config.PidPath). Check $($Config.LogPath) for logs."
-        }
-    }   
+        }   
+    }
 }
 

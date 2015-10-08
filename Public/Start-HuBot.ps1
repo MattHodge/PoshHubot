@@ -93,6 +93,10 @@ function Start-HuBot
             New-Item -Path $Config.LogPath -ItemType directory | Out-Null
         }
 
+        # Do an npm install incase there are any new modules
+        Write-Verbose -Message "Running npm install"
+        Start-Process -FilePath npm -ArgumentList "install" -Wait -NoNewWindow -WorkingDirectory $Config.BotPath
+
         # Add the environment variables from the config
         ForEach ($envVar in $Config.EnvironmentVariables.psobject.Properties)
         {
@@ -104,7 +108,7 @@ function Start-HuBot
 
         $processParams = @{
             FilePath = 'cmd'
-            ArgumentList = "/c forever start --uid ""$($Config.BotName)"" --pidFile ""$($Config.PidPath)"" --verbose --append -l ""$($Config.LogPath)\$($fileDate)_$($Config.BotName).log"" --sourceDir ""$($Config.BotPath)"" --workingDir ""$($Config.BotPath)"" --minUptime 100 --spinSleepTime 100 .\node_modules\hubot\node_modules\coffee-script\bin\coffee .\node_modules\hubot\bin\hubot $($Config.ArgumentList)"
+            ArgumentList = "/c forever start --uid ""$($Config.BotName)"" --pidFile ""$($Config.PidPath)"" -w ""$($Config.BotPath)"" --verbose --append -l ""$($Config.LogPath)\$($fileDate)_$($Config.BotName).log"" --sourceDir ""$($Config.BotPath)"" --workingDir ""$($Config.BotPath)"" --minUptime 100 --spinSleepTime 100 .\node_modules\hubot\node_modules\coffee-script\bin\coffee .\node_modules\hubot\bin\hubot $($Config.ArgumentList)"
             NoNewWindow = $true
             WorkingDirectory = $Config.BotPath
             PassThru = $true

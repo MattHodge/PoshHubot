@@ -20,8 +20,9 @@
 
         # The maximum file size in MB of the log before it rolls over
         [Parameter(Mandatory=$false)]
-        [string]
-        $MaxFileSizeMB,
+        [ValidateRange(1,1024)]
+        [int]
+        $MaxFileSizeMB = 10,
 
         # The Module or Function That Is Logging
         [Parameter(Mandatory=$true)]

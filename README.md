@@ -1,4 +1,4 @@
-# Hubot-PowerShell
+# PoshHubot
 
 PowerShell Module to Install and Configure Hubot.
 
@@ -11,7 +11,7 @@ The below example will create a configuration file located at `C:\PoshHubot\conf
 ```powershell
 
 # Import the module
-Import-Module -Name Hubot-PowerShell -Force
+Import-Module -Name PoshHubot -Force
 
 # Create hash of configuration options
 $newBot = @{
@@ -145,3 +145,38 @@ Stop-Hubot -ConfigPath "C:\PoshHubot\config.json"
 The PoshHubot script itself does not have any log files, but the Hubot does. These will be captured and logged.
 
 ![Hubot Logs](http://i.imgur.com/JaVIkIC.png)
+
+## 6. Start the Hubot when the server starts
+To have the Hubot start when your server boots, first create a startup script for example `C:\PoshHubot\startup.ps1` which contains the following:
+
+```powershell
+# Example C:\PoshHubot\startup.ps1 startup script
+Import-Module -Name PoshHubot
+
+Start-Hubot -ConfigPath 'C:\PoshHubot\config.json'
+```
+
+Then to have it start automatically when the server starts, run the following PowerShell commands:
+```powershell
+# Create a trigger
+$trigger = New-JobTrigger -AtStartup -RandomDelay 00:00:30
+
+# Make it wait for network
+$rn = New-ScheduledJobOption -RequireNetwork
+
+# Register the trigger
+Register-ScheduledJob -Trigger $trigger -Name StartHubot -ScheduledJobOption $rn -FilePath C:\PoshHubot\startup.ps1
+
+
+# Optional - if you need to run the Hubot as a specific user
+#
+# $cred = Get-Credential
+# Register-ScheduledJob -Trigger $trigger -FilePath C:\PoshHubot\startup.ps1 -Name StartHubot -Credential $cred
+```
+
+## 7. Where to from here?
+
+I recommend you do the following:
+
+* Create a git repo for your `C:\myhubot` directory so you can update the repo remotely and run a git pull to update your bots scripts. BitBucket provides private repositories which are useful for this. It is also a good idea to use BitBucket *Deployment Keys* so you can use git without having to provide a username and password on the Hubot server. https://confluence.atlassian.com/bitbucket/set-up-ssh-for-git-728138079.html
+*

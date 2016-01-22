@@ -9,7 +9,7 @@ Vagrant.require_version '>= 1.5.0'
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.hostname = 'hubotps'
 
-  config.vm.synced_folder '.', 'C:/PROGRA~1/WindowsPowerShell/Modules/Hubot-PowerShell'
+  config.vm.synced_folder '.', 'C:/PROGRA~1/WindowsPowerShell/Modules/PoshHubot'
 
   config.vm.box = 'kensykora/windows_2012_r2_standard'
 

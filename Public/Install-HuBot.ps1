@@ -22,13 +22,13 @@
     $Config = Import-HuBotConfiguration -ConfigPath $ConfigPath
 
     Write-Verbose -Message "Installing Chocolatey"
-    iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))
+    Invoke-Expression -Command ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))
 
     Write-Verbose -Message "Installing NodeJS"
-    choco install nodejs.install -y
+    Start-Process -FilePath 'choco.exe' -ArgumentList 'install nodejs.install -y' -Wait -NoNewWindow
 
     Write-Verbose -Message "Installing Git"
-    choco install git.install -y
+    Start-Process -FilePath 'choco.exe' -ArgumentList 'install git.install -y' -Wait -NoNewWindow
 
     Write-Verbose -Message "Reloading Path Enviroment Variables"
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")

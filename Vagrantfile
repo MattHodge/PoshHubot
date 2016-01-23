@@ -20,4 +20,43 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     v.cpus = 2
     v.memory = 2048
   end
+
+  # Set your Hubot integration API Token from Slack
+  slack_api_token = 'xoxb-XXXXXXXXX-XXXXXXXXXXXXXXXXXXX'
+  # Set your bot name
+  bot_name = 'bender'
+
+  hubotsetup = <<SCRIPT
+    Import-Module PoshHubot
+
+    $configPath = 'C:\\PoshHubot\\config.json'
+    if (Test-Path $configPath)
+    {
+      Stop-Hubot -ConfigPath $configPath
+    }
+
+    if (-not(Test-Path 'C:\\myhubot\\bin\\hubot.cmd'))
+    {
+      $newBot = @{
+          Path = $configPath
+          BotName = '#{bot_name}'
+          BotPath = 'C:\\myhubot'
+          BotAdapter = 'slack'
+          BotOwner = 'PoshHubot <posh@hubot.com>'
+          BotDescription = 'PoshHubot is awesome.'
+          LogPath = 'C:\\PoshHubot\\Logs'
+          BotDebugLog = $true
+      }
+
+      New-PoshHubotConfiguration @newBot
+
+      Install-Hubot -ConfigPath $configPath
+    }
+
+    $env:HUBOT_SLACK_TOKEN = '#{slack_api_token}'
+
+    Start-Hubot -ConfigPath $configPath
+SCRIPT
+
+  config.vm.provision 'shell', inline: hubotsetup
 end

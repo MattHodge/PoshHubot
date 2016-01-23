@@ -12,10 +12,10 @@
         BotOwner = 'matt'
         BotDescription = 'my@email.com'
         LogPath = "C:\PoshHubot\Logs"
-        LogLevel = 'DEBUG'
+        BotDebugLog = $true
     }
 
-    New-HubotConfiguration @newBot
+    New-PoshHubotConfiguration @newBot
 
     Generates a new PoshHubot configuration file
 #>

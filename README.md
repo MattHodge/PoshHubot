@@ -145,13 +145,3 @@ Stop-Hubot -ConfigPath "C:\PoshHubot\config.json"
 The PoshHubot script itself does not have any log files, but the Hubot does. These will be captured and logged.
 
 ![Hubot Logs](http://i.imgur.com/JaVIkIC.png)
-
-## 6. Start the Hubot when the server starts
-To have the Hubot start when your server boots, first create a startup script for example `C:\PoshHubot\startup.ps1` which contains the following:
-
-```powershell
-# Example C:\PoshHubot\startup.ps1 startup script
-Import-Module -Name PoshHubot
-
-Start-Hubot -ConfigPath 'C:\PoshHubot\config.json'
-```

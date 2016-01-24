@@ -155,28 +155,3 @@ Import-Module -Name PoshHubot
 
 Start-Hubot -ConfigPath 'C:\PoshHubot\config.json'
 ```
-
-Then to have it start automatically when the server starts, run the following PowerShell commands:
-```powershell
-# Create a trigger
-$trigger = New-JobTrigger -AtStartup -RandomDelay 00:00:30
-
-# Make it wait for network
-$rn = New-ScheduledJobOption -RequireNetwork
-
-# Register the trigger
-Register-ScheduledJob -Trigger $trigger -Name StartHubot -ScheduledJobOption $rn -FilePath C:\PoshHubot\startup.ps1
-
-
-# Optional - if you need to run the Hubot as a specific user
-#
-# $cred = Get-Credential
-# Register-ScheduledJob -Trigger $trigger -FilePath C:\PoshHubot\startup.ps1 -Name StartHubot -Credential $cred
-```
-
-## 7. Where to from here?
-
-I recommend you do the following:
-
-* Create a git repo for your `C:\myhubot` directory so you can update the repo remotely and run a git pull to update your bots scripts. BitBucket provides private repositories which are useful for this. It is also a good idea to use BitBucket *Deployment Keys* so you can use git without having to provide a username and password on the Hubot server. https://confluence.atlassian.com/bitbucket/set-up-ssh-for-git-728138079.html
-*

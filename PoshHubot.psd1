@@ -104,7 +104,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'Initial Release'
+        ReleaseNotes = 'Fixed modules not showing. Added Restart-Hubot function'
 
         # External dependent modules of this module
         # ExternalModuleDependencies = ''

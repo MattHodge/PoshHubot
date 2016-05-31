@@ -25,7 +25,7 @@
     Invoke-Expression -Command ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))
 
     Write-Verbose -Message "Installing NodeJS"
-    Start-Process -FilePath 'choco.exe' -ArgumentList 'install nodejs.install -y' -Wait -NoNewWindow
+    Start-Process -FilePath 'choco.exe' -ArgumentList 'install nodejs.install -version 5.10.1 -y' -Wait -NoNewWindow
 
     Write-Verbose -Message "Installing Git"
     Start-Process -FilePath 'choco.exe' -ArgumentList 'install git.install -y' -Wait -NoNewWindow

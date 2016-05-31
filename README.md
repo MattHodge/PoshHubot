@@ -2,6 +2,8 @@
 
 PowerShell Module to Install and Configure Hubot.
 
+Read more at: https://hodgkins.io/chatops-on-windows-with-hubot-and-powershell
+
 # Installation
 ## 1. Create a PoshHubot Configuration File
 A configuration file needs to be created which will store the settings for your Hubot.

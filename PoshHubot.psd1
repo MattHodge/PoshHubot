@@ -12,7 +12,7 @@
 RootModule = 'PoshHubot.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.0.1'
+ModuleVersion = '1.0.2'
 
 # ID used to uniquely identify this module
 GUID = '622b72ea-1253-4d36-9c92-df4ce8d92677'

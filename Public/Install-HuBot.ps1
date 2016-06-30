@@ -21,8 +21,7 @@
 
     $Config = Import-HuBotConfiguration -ConfigPath $ConfigPath
 
-    Write-Verbose -Message "Installing Chocolatey"
-    Invoke-Expression -Command ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))
+    Install-Chocolatey
 
     Write-Verbose -Message "Installing NodeJS"
     Start-Process -FilePath 'choco.exe' -ArgumentList 'install nodejs.install -version 5.10.1 -y' -Wait -NoNewWindow

@@ -1,17 +1,17 @@
 ﻿<#
 .Synopsis
-   Imports a PoshHuBot configuration file.
+   Imports a PoshHubot configuration file.
 .DESCRIPTION
-   Imports a PoshHuBot configuration file.
+   Imports a PoshHubot configuration file.
 .EXAMPLE
-   Import-HuBotConfiguration -ConfigPath C:\PoshHuBot\config.json
+   Import-HubotConfiguration -ConfigPath C:\PoshHubot\config.json
 #>
-function Import-HuBotConfiguration
+function Import-HubotConfiguration
 {
     [CmdletBinding()]
     Param
     (
-        # Path to the PoshHuBot Configuration File
+        # Path to the PoshHubot Configuration File
         [Parameter(Mandatory=$true)]
         [ValidateScript({
         if(Test-Path -Path $_ -ErrorAction SilentlyContinue)
@@ -35,7 +35,7 @@ function Import-HuBotConfiguration
     {
         throw "There was a problem importing the configuration file. Confirm your JSON formatting."
     }
-    
+
 
     return $Config
 }

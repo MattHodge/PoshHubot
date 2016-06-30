@@ -11,7 +11,7 @@ function Restart-Hubot
     [CmdletBinding(SupportsShouldProcess)]
     Param
     (
-        # Path to the PoshHuBot Configuration File
+        # Path to the PoshHubot Configuration File
         [Parameter(Mandatory=$true)]
         [ValidateScript({
         if(Test-Path -Path $_ -ErrorAction SilentlyContinue)
@@ -29,10 +29,10 @@ function Restart-Hubot
 
     if ($pscmdlet.ShouldProcess($ConfigPath, "Stopping Hubot configuration."))
     {
-        Stop-HuBot -ConfigPath $ConfigPath
-    } 
+        Stop-Hubot -ConfigPath $ConfigPath
+    }
     if ($pscmdlet.ShouldProcess($ConfigPath, "Starting Hubot configuration."))
     {
-        Start-HuBot -ConfigPath $ConfigPath
-    } 
+        Start-Hubot -ConfigPath $ConfigPath
+    }
 }

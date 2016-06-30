@@ -1,10 +1,12 @@
-﻿function Install-HuBot
+﻿function Install-Hubot
 {
     [CmdletBinding()]
     Param
     (
-        # Path to the PoshHuBot Configuration File
-        [Parameter(Mandatory=$true)]
+        # Path to the PoshHubot Configuration File
+        [Parameter(Mandatory=$true,
+                   ValueFromPipeline=$true
+        )]
         [ValidateScript({
         if(Test-Path -Path $_ -ErrorAction SilentlyContinue)
         {
@@ -19,7 +21,7 @@
         $ConfigPath
     )
 
-    $Config = Import-HuBotConfiguration -ConfigPath $ConfigPath
+    $Config = Import-HubotConfiguration -ConfigPath $ConfigPath
 
     Install-Chocolatey
 

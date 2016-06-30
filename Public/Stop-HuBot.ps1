@@ -13,7 +13,7 @@ function Stop-Hubot
     [CmdletBinding(SupportsShouldProcess)]
     Param
     (
-        # Path to the PoshHuBot Configuration File
+        # Path to the PoshHubot Configuration File
         [Parameter(Mandatory=$true)]
         [ValidateScript({
         if(Test-Path -Path $_ -ErrorAction SilentlyContinue)
@@ -29,7 +29,7 @@ function Stop-Hubot
         $ConfigPath
     )
 
-    $Config = Import-HuBotConfiguration -ConfigPath $ConfigPath
+    $Config = Import-HubotConfiguration -ConfigPath $ConfigPath
 
     $processParams = @{
         FilePath = 'cmd'
@@ -40,10 +40,10 @@ function Stop-Hubot
     }
 
     Write-Verbose "Stop Command:"
-    Write-Verbose $processParams.ArgumentList 
+    Write-Verbose $processParams.ArgumentList
     if ($pscmdlet.ShouldProcess($processParams, "Stopping Hubot configuration."))
     {
         Start-Process @processParams
-    } 
-    
+    }
+
 }

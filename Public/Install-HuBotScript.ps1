@@ -8,7 +8,7 @@
 .EXAMPLE
    Another example of how to use this cmdlet
 #>
-function Install-HuBotScript
+function Install-HubotScript
 {
     [CmdletBinding()]
     Param
@@ -17,7 +17,7 @@ function Install-HuBotScript
         [Parameter(Mandatory=$true)]
         $Name,
 
-        # Path to the PoshHuBot Configuration File
+        # Path to the PoshHubot Configuration File
         [Parameter(Mandatory=$false)]
         [ValidateScript({
         if(Test-Path -Path $_ -ErrorAction SilentlyContinue)
@@ -37,7 +37,7 @@ function Install-HuBotScript
         $NameInConfig=$Name
     )
 
-    $Config = Import-HuBotConfiguration -ConfigPath $ConfigPath
+    $Config = Import-HubotConfiguration -ConfigPath $ConfigPath
 
     if (-not(Test-Path -Path $Config.BotExternalScriptsPath))
     {

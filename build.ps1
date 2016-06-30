@@ -31,3 +31,9 @@ if (-not($env:APPVEYOR))
 
 # Invoke PSake
 Invoke-psake -buildFile "$PSScriptRoot\psakeBuild.ps1" -taskList $Task -parameters @{'build_version' = $env:appveyor_build_version} -Verbose:$VerbosePreference
+
+if ($psake.build_success -eq $false) { 
+	exit 1 
+} else { 
+	exit 0 
+}

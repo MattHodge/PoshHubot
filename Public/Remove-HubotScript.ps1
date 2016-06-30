@@ -10,7 +10,7 @@
 #>
 function Remove-HubotScript
 {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     Param
     (
         # Name of script to remove
@@ -54,8 +54,12 @@ function Remove-HubotScript
 
         $newConfigValue = $extenalScripts | ConvertTo-Json
 
-        Write-Verbose "Removing $($NameInConfig) from $($Config.BotExternalScriptsPath)"
+        if ($pscmdlet.ShouldProcess($NameInConfig, "Remove from $($Config.BotExternalScriptsPath)"))
+        {
+            Write-Verbose "Removing $($NameInConfig) from $($Config.BotExternalScriptsPath)"
 
-        Set-Content -Path $Config.BotExternalScriptsPath -Value $newConfigValue
+            Set-Content -Path $Config.BotExternalScriptsPath -Value $newConfigValue
+        }
+
     }
 }

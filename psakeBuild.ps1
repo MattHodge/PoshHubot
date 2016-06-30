@@ -85,4 +85,8 @@ task BuildArtifact -depends Analyze, Test {
     {
         $zip = Get-ChildItem -Path $PSScriptRoot\Artifact\*.zip |  % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
     }
+    else
+    {
+        Get-ChildItem $PSScriptRoot\Artifact\$moduleName | Remove-Item -Force -Recurse
+    }
 }

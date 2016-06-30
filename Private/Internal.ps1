@@ -46,9 +46,9 @@ function PSUsing
     }
     Finally
     {
-        if ($inputObject -ne $null)
+        if ($null -ne $inputObject)
         {
-            if ($inputObject.psbase -eq $null)
+            if ($null -eq $inputObject.psbase)
             {
                 $inputObject.Dispose()
             }

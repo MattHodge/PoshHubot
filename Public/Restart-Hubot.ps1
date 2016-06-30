@@ -6,7 +6,7 @@
 .EXAMPLE
    Restart-Hubot -ConfigPath 'C:\PoshHubot\config.json'
 #>
-function Restart-Hubot
+function Restart-HuBot
 {
     [CmdletBinding()]
     Param

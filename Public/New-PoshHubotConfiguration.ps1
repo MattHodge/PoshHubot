@@ -19,7 +19,7 @@
 
     Generates a new PoshHubot configuration file
 #>
-function New-PoshHubotConfiguration
+function New-PoshHuBotConfiguration
 {
     [CmdletBinding()]
     Param
@@ -109,7 +109,8 @@ function New-PoshHubotConfiguration
     try
     {
         Set-Content -Path $Path -Value $json
-        Write-Output "PoshHubot Configuration saved to $($Path)."
+        Write-Verbose "PoshHubot Configuration saved to $($Path)."
+        Write-Output $Path
     }
     catch
     {

@@ -8,7 +8,7 @@
 .EXAMPLE
    Another example of how to use this cmdlet
 #>
-function Stop-Hubot
+function Stop-HuBot
 {
     [CmdletBinding()]
     Param

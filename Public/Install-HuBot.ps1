@@ -4,7 +4,9 @@
     Param
     (
         # Path to the PoshHuBot Configuration File
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory=$true,
+                   ValueFromPipeline=$true
+        )]
         [ValidateScript({
         if(Test-Path -Path $_ -ErrorAction SilentlyContinue)
         {

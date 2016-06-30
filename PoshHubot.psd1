@@ -101,10 +101,10 @@ PrivateData = @{
         ProjectUri = 'https://github.com/MattHodge/PoshHubot'
 
         # A URL to an icon representing this module.
-        # IconUri = ''
+        IconUri = 'http://i.imgur.com/pGGMJtb.png'
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'Fixed modules not showing. Added Restart-Hubot function'
+        # ReleaseNotes = ''
 
         # External dependent modules of this module
         # ExternalModuleDependencies = ''

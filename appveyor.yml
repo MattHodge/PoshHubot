@@ -1,0 +1,32 @@
+# See http://www.appveyor.com/docs/appveyor-yml for many more options
+
+# Skip on updates to the readme.
+# We can force this by adding [skip ci] or [ci skip] anywhere in commit message
+skip_commits:
+  message: /updated readme.*/
+
+os: "WMF 5"
+
+install:
+  - ps: Write-Output "Build Number $($env:APPVEYOR_BUILD_NUMBER)"
+  - ps: Write-Output "Build Version $($env:APPVEYOR_BUILD_VERSION)"
+
+build: false
+version: '1.0.{build}'
+
+before_test:
+  - ps: .\build.ps1
+
+test_script:
+# Test with native PS version
+#  - ps: . .\Tests\appveyor.pester.ps1 -Test
+# Finalize pass - collect and upload results
+  - ps: . .\Tests\appveyor.pester.ps1 -Finalize
+
+branches:
+  # whitelist
+  only:
+    - master
+
+#on_finish:
+#- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))

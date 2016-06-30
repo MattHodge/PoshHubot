@@ -11,6 +11,10 @@ install:
   - ps: Write-Output "Build Number $($env:APPVEYOR_BUILD_NUMBER)"
   - ps: Write-Output "Build Version $($env:APPVEYOR_BUILD_VERSION)"
 
+environment:
+  PSGalleryKey:
+    secure: +WIaoztv7E/2is7QVRnd2i1HAawDHXzJWo8Izni42C/XYDN6b7Y8MPgnBr8wvy4f
+
 build: false
 version: '1.0.{build}'
 

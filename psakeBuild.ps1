@@ -5,7 +5,7 @@
     $filesToTest = Get-ChildItem *.psm1,*.psd1,*.ps1 -Recurse -Exclude *build.ps1,*.pester.ps1,*Tests.ps1
 }
 
-task default -depends Analyze, Test, BuildArtifact
+task default -depends Analyze, Test, BuildArtifact, UploadToPSGallery
 
 task TestProperties { 
   Assert ($build_version -ne $null) "build_version should not be null"
@@ -85,8 +85,16 @@ task BuildArtifact -depends Analyze, Test {
     {
         $zip = Get-ChildItem -Path $PSScriptRoot\Artifact\*.zip |  % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
     }
+}
+
+task UploadToPSGallery -depends Analyze, Test, BuildArtifact  {
+    if ($env:APPVEYOR)
+    {
+        Publish-Module -Path $PSScriptRoot\Artifact\$moduleName -Name $moduleName -NuGetApiKey $env:PSGalleryKey
+    }
     else
     {
+        Write-Output "Would have published $($PSScriptRoot)\Artifact\$($moduleName) to the PSGallery"
         Get-ChildItem $PSScriptRoot\Artifact\$moduleName | Remove-Item -Force -Recurse
     }
 }

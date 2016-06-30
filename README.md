@@ -1,10 +1,24 @@
 # PoshHubot
 
+![Hubot](http://i.imgur.com/NhTqeZ2.png)
+
+[![Build status](https://ci.appveyor.com/api/projects/status/q68dcyenvhy56ned/branch/master?svg=true)](https://ci.appveyor.com/project/MattHodge/poshhubot/branch/master)
+
 PowerShell Module to Install and Configure Hubot.
 
 Read more at: https://hodgkins.io/chatops-on-windows-with-hubot-and-powershell
 
+# DSC Resource
+
+There is a DSC Resource which can install Hubot for you on Windows and run as a Windows service. You can find it here: https://github.com/MattHodge/Hubot-DSC-Resource
+
 # Installation
+
+To install the module, use:
+
+`Install-Module -Name PoshHubot`
+
+# Usage Guide
 ## 1. Create a PoshHubot Configuration File
 A configuration file needs to be created which will store the settings for your Hubot.
 

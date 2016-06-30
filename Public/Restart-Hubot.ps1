@@ -8,7 +8,7 @@
 #>
 function Restart-Hubot
 {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     Param
     (
         # Path to the PoshHuBot Configuration File
@@ -27,6 +27,12 @@ function Restart-Hubot
         $ConfigPath
     )
 
-    Stop-HuBot -ConfigPath $ConfigPath
-    Start-HuBot -ConfigPath $ConfigPath
+    if ($pscmdlet.ShouldProcess($ConfigPath, "Stopping Hubot configuration."))
+    {
+        Stop-HuBot -ConfigPath $ConfigPath
+    } 
+    if ($pscmdlet.ShouldProcess($ConfigPath, "Starting Hubot configuration."))
+    {
+        Start-HuBot -ConfigPath $ConfigPath
+    } 
 }

@@ -10,7 +10,7 @@
 #>
 function Stop-Hubot
 {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     Param
     (
         # Path to the PoshHuBot Configuration File
@@ -41,6 +41,9 @@ function Stop-Hubot
 
     Write-Verbose "Stop Command:"
     Write-Verbose $processParams.ArgumentList 
-
-    Start-Process @processParams
+    if ($pscmdlet.ShouldProcess($processParams, "Stopping Hubot configuration."))
+    {
+        Start-Process @processParams
+    } 
+    
 }

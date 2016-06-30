@@ -21,7 +21,7 @@
 #>
 function New-PoshHubotConfiguration
 {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     Param
     (
         # Path to the PoshHubot Configuration File eg. C:\PoshHubot\config.json
@@ -67,9 +67,6 @@ function New-PoshHubotConfiguration
         # Command line argument to use when running Hubot.
         [Parameter(Mandatory=$false)]
         $ArgumentList = "--adapter $($BotAdapter)"
-
-
-
     )
 
     # create folder to hold configuration file
@@ -105,14 +102,17 @@ function New-PoshHubotConfiguration
     $json = $params | ConvertTo-Json
 
     Write-Verbose $json
-
-    try
+           
+    if ($pscmdlet.ShouldProcess($Path, "Writing configuration file."))
     {
-        Set-Content -Path $Path -Value $json
-        Write-Output "PoshHubot Configuration saved to $($Path)."
-    }
-    catch
-    {
-        throw "Error writing configuration file."
-    }
+        try
+        {
+            Set-Content -Path $Path -Value $json
+            Write-Output "PoshHubot Configuration saved to $($Path)."
+        }
+        catch
+        {
+            throw "Error writing configuration file."
+        }   
+    }            
 }

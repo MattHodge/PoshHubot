@@ -8,12 +8,12 @@
 .EXAMPLE
    Another example of how to use this cmdlet
 #>
-function Start-HuBot
+function Start-Hubot
 {
     [CmdletBinding()]
     Param
     (
-        # Path to the PoshHuBot Configuration File
+        # Path to the PoshHubot Configuration File
         [Parameter(Mandatory=$true)]
         [ValidateScript({
         if(Test-Path -Path $_ -ErrorAction SilentlyContinue)
@@ -29,14 +29,14 @@ function Start-HuBot
         $ConfigPath
     )
 
-    $Config = Import-HuBotConfiguration -ConfigPath $ConfigPath
+    $Config = Import-HubotConfiguration -ConfigPath $ConfigPath
 
     function Test-HubotRunning
     {
         [CmdletBinding()]
         Param
         (
-            # Path to the PoshHuBot Configuration File
+            # Path to the PoshHubot Configuration File
             [Parameter(Mandatory=$true)]
             [ValidateScript({
             if(Test-Path -Path $_ -ErrorAction SilentlyContinue)
@@ -51,14 +51,14 @@ function Start-HuBot
             [string]
             $ConfigPath
         )
-    
+
         # Check if bot is already running, otherwise don't start it again
         if (Test-Path -Path $Config.PidPath)
         {
             $pidOfHubot = Get-Content -Path $Config.PidPath
 
             # if it exists, get the id from it and make sure that exists too
-            try 
+            try
             {
                 $huproc = Get-Process -Id $pidOfHubot -ErrorAction Stop
 
@@ -79,7 +79,7 @@ function Start-HuBot
         }
     }
 
-    
+
     if (Test-HubotRunning -ConfigPath $ConfigPath)
     {
         return "Your bot $($Config.BotName) is already running."
@@ -120,7 +120,7 @@ function Start-HuBot
         # Start Hubot
         $proc = Start-Process @processParams
 
-        # Wait for the command prompt to close 
+        # Wait for the command prompt to close
         $proc.WaitForExit()
 
         # Wait a few seconds for pid to be created
@@ -134,7 +134,6 @@ function Start-HuBot
         else
         {
             throw "Could not find pid file at $($Config.PidPath). Check $($Config.LogPath) for logs."
-        }   
+        }
     }
 }
-

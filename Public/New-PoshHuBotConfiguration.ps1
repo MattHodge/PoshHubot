@@ -87,32 +87,32 @@ function New-PoshHubotConfiguration
     $params.PidPath = "$($params.BotPath)\$($params.BotName).pid"
 
     # Add some environment variables
-    $params.EnvironmentVariables += @{ 
+    $params.EnvironmentVariables += @{
         'HUBOT_ADAPTER' = $BotAdapter
     }
 
     # Enable Debugging for Hubot
     if ($BotDebugLog)
     {
-        $params.EnvironmentVariables += @{ 
-            'HUBOT_LOG_LEVEL' = 'debug' 
+        $params.EnvironmentVariables += @{
+            'HUBOT_LOG_LEVEL' = 'debug'
         }
     }
 
     $json = $params | ConvertTo-Json
 
     Write-Verbose $json
-           
+
     if ($pscmdlet.ShouldProcess($Path, "Writing configuration file."))
     {
         try
         {
             Set-Content -Path $Path -Value $json
-            Write-Output "PoshHubot Configuration saved to $($Path)."
+            Write-Verbose "PoshHubot Configuration saved to $($Path)."
         }
         catch
         {
             throw "Error writing configuration file."
-        }   
-    }            
+        }
+    }
 }

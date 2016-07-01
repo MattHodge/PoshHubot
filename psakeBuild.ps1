@@ -77,25 +77,37 @@ task BuildArtifact -depends Analyze, Test {
     
     $manifest = Join-Path -Path "$PSScriptRoot\Artifact\$($moduleName)" -ChildPath "$($moduleName).psd1"
 
-    (Get-Content $manifest -Raw).Replace("1.0.2", $env:APPVEYOR_BUILD_VERSION) | Out-File $manifest
-    
-    Compress-Archive -Path $PSScriptRoot\Artifact\$moduleName -DestinationPath $PSScriptRoot\Artifact\$moduleName-$build_version.zip -Force
-
-    if ($env:APPVEYOR)
+    # Only want proper releases when tagged
+    if ($env:APPVEYOR -and $env:APPVEYOR_REPO_TAG)
     {
+        Write-Output "Changing module version to Github tag version $($env:APPVEYOR_REPO_TAG_NAME)"
+        (Get-Content $manifest -Raw).Replace("1.0.2", $env:APPVEYOR_REPO_TAG_NAME) | Out-File $manifest
+        Compress-Archive -Path $PSScriptRoot\Artifact\$moduleName -DestinationPath $PSScriptRoot\Artifact\$moduleName-$env:APPVEYOR_REPO_TAG_NAME.zip -Force
+    }
+    # Artifiacts are built every time but not published unless tagged. This is for local testing
+    else
+    {
+        (Get-Content $manifest -Raw).Replace("1.0.2", $build_version) | Out-File $manifest
+        Compress-Archive -Path $PSScriptRoot\Artifact\$moduleName -DestinationPath $PSScriptRoot\Artifact\$moduleName-CI-$build_version.zip -Force
+    }
+
+    if ($env:APPVEYOR -and ($env:APPVEYOR_REPO_BRANCH -eq 'master'))
+    {
+        Write-Output "Publishing artifacts as build was done against master"
         $zip = Get-ChildItem -Path $PSScriptRoot\Artifact\*.zip |  % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
     }
 }
 
 task UploadToPSGallery -depends Analyze, Test, BuildArtifact  {
-    if ($env:APPVEYOR)
+    # Upload artifiact only on tagging
+    if ($env:APPVEYOR -and $env:APPVEYOR_REPO_TAG)
     {
         Write-Output "Publishing Module Located In $($PSScriptRoot)\Artifact\$($moduleName) to the PSGallery"
         Publish-Module -Path $PSScriptRoot\Artifact\$moduleName -NuGetApiKey $env:PSGalleryKey
     }
     else
     {
-        Write-Output "Would have published $($PSScriptRoot)\Artifact\$($moduleName) to the PSGallery"
+        Write-Output "If this was master in Appveyor, module would be published to PSGallery from $($PSScriptRoot)\Artifact\$($moduleName)."
         Get-ChildItem $PSScriptRoot\Artifact\$moduleName | Remove-Item -Force -Recurse
     }
 }

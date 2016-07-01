@@ -89,7 +89,7 @@ task BuildArtifact -depends Analyze, Test {
     Start-Process -FilePath 'robocopy.exe' -ArgumentList "`"$($PSScriptRoot)`" `"$($artifactModulePath)`" /S /R:1 /W:1 /XD Artifact .kitchen .vagrant .git /XF .gitignore build.ps1 psakeBuild.ps1 *.yml PesterResults*.xml TestResults*.xml" -Wait -NoNewWindow
     
     # Only want proper releases when tagged
-    if ($env:APPVEYOR_REPO_TAG -and ($env:APPVEYOR_REPO_BRANCH -eq 'master'))
+    if ($env:APPVEYOR_REPO_TAG_NAME -and ($env:APPVEYOR_REPO_BRANCH -eq 'master'))
     {
         Write-Output "Changing module version to Github tag version $($env:APPVEYOR_REPO_TAG_NAME)"
         (Get-Content $manifestPath -Raw).Replace("1.0.2", $env:APPVEYOR_REPO_TAG_NAME) | Out-File $manifestPath
@@ -128,7 +128,7 @@ task UploadArtifact -depends Analyze, Test, BuildArtifact  {
 
     # Publish Module
     # Upload artifiact only on tagging
-    if ($env:APPVEYOR -and $env:APPVEYOR_REPO_TAG -and ($env:APPVEYOR_REPO_BRANCH -eq 'master'))
+    if ($env:APPVEYOR_REPO_TAG_NAME -and ($env:APPVEYOR_REPO_BRANCH -eq 'master'))
     {
         Write-Output "Publishing Module Located In $($artifactModulePath) to the PSGallery"
         Publish-Module -Path $artifactModulePath -NuGetApiKey $env:PSGalleryKey

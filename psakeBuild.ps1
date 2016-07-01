@@ -90,6 +90,7 @@ task BuildArtifact -depends Analyze, Test {
 task UploadToPSGallery -depends Analyze, Test, BuildArtifact  {
     if ($env:APPVEYOR)
     {
+        Write-Output "Publishing Module Located In $($PSScriptRoot)\Artifact\$($moduleName) to the PSGallery"
         Publish-Module -Path $PSScriptRoot\Artifact\$moduleName -NuGetApiKey $env:PSGalleryKey
     }
     else

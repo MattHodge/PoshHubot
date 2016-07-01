@@ -90,7 +90,7 @@ task BuildArtifact -depends Analyze, Test {
 task UploadToPSGallery -depends Analyze, Test, BuildArtifact  {
     if ($env:APPVEYOR)
     {
-        Publish-Module -Path $PSScriptRoot\Artifact\$moduleName -Name $moduleName -NuGetApiKey $env:PSGalleryKey
+        Publish-Module -Path $PSScriptRoot\Artifact\$moduleName -NuGetApiKey $env:PSGalleryKey
     }
     else
     {

@@ -1,11 +1,24 @@
 ﻿properties {
+    # Name of the module
     $moduleName = 'PoshHubot'
-    $unitTests = "$PSScriptRoot\Tests\unit"
 
+    # Path for unit tests
+    $unitTestsPath = "$($PSScriptRoot)\Tests\unit"
+
+    # Artifact Root Path
+    $artifactRootPath = "$($PSScriptRoot)\Artifact"
+
+    # Artifact Module Path
+    $artifactModulePath = "$($artifactRootPath)\$($moduleName)"
+
+    # Path for manifests file
+    $manifestPath = Join-Path -Path $artifactModulePath -ChildPath "$($moduleName).psd1"
+
+    # List of the PowerShell scripts to test
     $filesToTest = Get-ChildItem *.psm1,*.psd1,*.ps1 -Recurse -Exclude *build.ps1,*.pester.ps1,*Tests.ps1
 }
 
-task default -depends Analyze, Test, BuildArtifact, UploadToPSGallery
+task default -depends Analyze, Test, BuildArtifact, UploadArtifact
 
 task TestProperties { 
   Assert ($build_version -ne $null) "build_version should not be null"
@@ -63,8 +76,8 @@ task Analyze {
 }
 
 task Test {
-    $testResults = .\Tests\appveyor.pester.ps1 -Test -TestPath $unitTests
-    # $testResults = Invoke-Pester -Path $unitTests -PassThru
+    $testResults = .\Tests\appveyor.pester.ps1 -Test -TestPath $unitTestsPath
+    # $testResults = Invoke-Pester -Path $unitTestsPath -PassThru
     if ($testResults.FailedCount -gt 0) {
         $testResults | Format-List
         Write-Error -Message 'One or more Pester unit tests failed. Build cannot continue!'
@@ -72,42 +85,57 @@ task Test {
 }
 
 task BuildArtifact -depends Analyze, Test {
-    New-Item -Path "$PSScriptRoot\Artifact" -ItemType Directory -Force
-    Start-Process -FilePath 'robocopy.exe' -ArgumentList "`"$($PSScriptRoot)`" `"$($PSScriptRoot)\Artifact\$($moduleName)`" /S /R:1 /W:1 /XD Artifact .kitchen .vagrant .git /XF .gitignore build.ps1 psakeBuild.ps1 *.yml PesterResults*.xml TestResults*.xml" -Wait -NoNewWindow
+    New-Item -Path $artifactRootPath -ItemType Directory -Force
+    Start-Process -FilePath 'robocopy.exe' -ArgumentList "`"$($PSScriptRoot)`" `"$($artifactModulePath)`" /S /R:1 /W:1 /XD Artifact .kitchen .vagrant .git /XF .gitignore build.ps1 psakeBuild.ps1 *.yml PesterResults*.xml TestResults*.xml" -Wait -NoNewWindow
     
-    $manifest = Join-Path -Path "$PSScriptRoot\Artifact\$($moduleName)" -ChildPath "$($moduleName).psd1"
-
     # Only want proper releases when tagged
-    if ($env:APPVEYOR -and $env:APPVEYOR_REPO_TAG)
+    if ($env:APPVEYOR_REPO_TAG -and ($env:APPVEYOR_REPO_BRANCH -eq 'master'))
     {
         Write-Output "Changing module version to Github tag version $($env:APPVEYOR_REPO_TAG_NAME)"
-        (Get-Content $manifest -Raw).Replace("1.0.2", $env:APPVEYOR_REPO_TAG_NAME) | Out-File $manifest
-        Compress-Archive -Path $PSScriptRoot\Artifact\$moduleName -DestinationPath $PSScriptRoot\Artifact\$moduleName-$env:APPVEYOR_REPO_TAG_NAME.zip -Force
+        (Get-Content $manifestPath -Raw).Replace("1.0.2", $env:APPVEYOR_REPO_TAG_NAME) | Out-File $manifestPath
+        Compress-Archive -Path $artifactModulePath -DestinationPath "$($artifactModulePath)\$($env:APPVEYOR_REPO_TAG_NAME).zip" -Force
     }
     # Artifiacts are built every time but not published unless tagged. This is for local testing
     else
     {
-        (Get-Content $manifest -Raw).Replace("1.0.2", $build_version) | Out-File $manifest
-        Compress-Archive -Path $PSScriptRoot\Artifact\$moduleName -DestinationPath $PSScriptRoot\Artifact\$moduleName-CI-$build_version.zip -Force
-    }
-
-    if ($env:APPVEYOR -and ($env:APPVEYOR_REPO_BRANCH -eq 'master'))
-    {
-        Write-Output "Publishing artifacts as build was done against master"
-        $zip = Get-ChildItem -Path $PSScriptRoot\Artifact\*.zip |  % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+        Write-Output "Not a tagged release, only building a CI Artifact"
+        (Get-Content $manifestPath -Raw).Replace("1.0.2", $build_version) | Out-File $manifestPath
+        Compress-Archive -Path $artifactModulePath -DestinationPath "$($artifactModulePath)-CI-$($build_version).zip" -Force
     }
 }
 
-task UploadToPSGallery -depends Analyze, Test, BuildArtifact  {
-    # Upload artifiact only on tagging
-    if ($env:APPVEYOR -and $env:APPVEYOR_REPO_TAG)
+task UploadArtifact -depends Analyze, Test, BuildArtifact  {
+
+    # Get Zips
+    $zips = Get-ChildItem -Path "$($artifactRootPath)\*.zip"
+
+    # Upload Zipped Artifacts
+    ForEach ($zip in $zips)
     {
-        Write-Output "Publishing Module Located In $($PSScriptRoot)\Artifact\$($moduleName) to the PSGallery"
-        Publish-Module -Path $PSScriptRoot\Artifact\$moduleName -NuGetApiKey $env:PSGalleryKey
+        Write-Output "Found zip: $($zip.FullName)"
+
+        # only upload artifacts on master branch
+        if ($env:APPVEYOR -and ($env:APPVEYOR_REPO_BRANCH -eq 'master'))
+        {
+            Write-Output "Pushing $($zip.Fullname) to AppveyorArtifacts"
+            Push-AppveyorArtifact $zip.FullName -FileName $zip.Name
+        }
+        else
+        {
+            Write-Output "If this was Appveyor AND master branch, I would have pushed $($zip.Fullname) to AppveyorArtifacts"
+        }
+    }
+
+    # Publish Module
+    # Upload artifiact only on tagging
+    if ($env:APPVEYOR -and $env:APPVEYOR_REPO_TAG -and ($env:APPVEYOR_REPO_BRANCH -eq 'master'))
+    {
+        Write-Output "Publishing Module Located In $($artifactModulePath) to the PSGallery"
+        Publish-Module -Path $artifactModulePath -NuGetApiKey $env:PSGalleryKey
     }
     else
     {
-        Write-Output "If this was master in Appveyor, module would be published to PSGallery from $($PSScriptRoot)\Artifact\$($moduleName)."
-        Get-ChildItem $PSScriptRoot\Artifact\$moduleName | Remove-Item -Force -Recurse
+        Write-Output "If this was Appveyor AND master branch, $($artifactModulePath) would be published to PSGallery."
+        Get-ChildItem $artifactModulePath | Remove-Item -Force -Recurse
     }
 }

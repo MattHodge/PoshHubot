@@ -16,6 +16,18 @@
 
     # List of the PowerShell scripts to test
     $filesToTest = Get-ChildItem *.psm1,*.psd1,*.ps1 -Recurse -Exclude *build.ps1,*.pester.ps1,*Tests.ps1
+
+    # Module version to replace on build
+    $originalModuleVersion = '1.0.2'
+
+    # Files To exclude from packaging
+    $filesToExclude = @('.gitignore', 'build.ps1', 'psakeBuild.ps1', '*.yml', 'PesterResults*.xml', 'TestResults*.xml')
+
+    # Directories to exclude from packaging
+    $directoriesToExclude = @('Artifact', '.kitchen', '.vagrant', '.git')
+
+    # PSGallery API Key
+    $PSGalleryAPIKey = $env:PSGalleryKey
 }
 
 task default -depends Analyze, Test, BuildArtifact, UploadArtifact
@@ -85,21 +97,27 @@ task Test {
 }
 
 task BuildArtifact -depends Analyze, Test {
+    # join the arrys for using within robocopy
+    $filesToExclude = $filesToExclude -join ' '
+    $directoriesToExclude = $directoriesToExclude -join ' '
+
     New-Item -Path $artifactRootPath -ItemType Directory -Force
-    Start-Process -FilePath 'robocopy.exe' -ArgumentList "`"$($PSScriptRoot)`" `"$($artifactModulePath)`" /S /R:1 /W:1 /XD Artifact .kitchen .vagrant .git /XF .gitignore build.ps1 psakeBuild.ps1 *.yml PesterResults*.xml TestResults*.xml" -Wait -NoNewWindow
+    
+    # prepare artifacts 
+    Start-Process -FilePath 'robocopy.exe' -ArgumentList "`"$($PSScriptRoot)`" `"$($artifactModulePath)`" /S /R:1 /W:1 /XD $directoriesToExclude /XF $filesToExclude" -Wait -NoNewWindow
     
     # Only want proper releases when tagged
     if ($env:APPVEYOR_REPO_TAG_NAME -and ($env:APPVEYOR_REPO_BRANCH -eq 'master'))
     {
         Write-Output "Changing module version to Github tag version $($env:APPVEYOR_REPO_TAG_NAME)"
-        (Get-Content $manifestPath -Raw).Replace("1.0.2", $env:APPVEYOR_REPO_TAG_NAME) | Out-File $manifestPath
+        (Get-Content $manifestPath -Raw).Replace($originalModuleVersion, $env:APPVEYOR_REPO_TAG_NAME) | Out-File $manifestPath
         Compress-Archive -Path $artifactModulePath -DestinationPath "$($artifactModulePath)\$($env:APPVEYOR_REPO_TAG_NAME).zip" -Force
     }
     # Artifiacts are built every time but not published unless tagged. This is for local testing
     else
     {
         Write-Output "Not a tagged release, only building a CI Artifact"
-        (Get-Content $manifestPath -Raw).Replace("1.0.2", $build_version) | Out-File $manifestPath
+        (Get-Content $manifestPath -Raw).Replace($originalModuleVersion, $build_version) | Out-File $manifestPath
         Compress-Archive -Path $artifactModulePath -DestinationPath "$($artifactModulePath)-CI-$($build_version).zip" -Force
     }
 }
@@ -131,7 +149,7 @@ task UploadArtifact -depends Analyze, Test, BuildArtifact  {
     if ($env:APPVEYOR_REPO_TAG_NAME -and ($env:APPVEYOR_REPO_BRANCH -eq 'master'))
     {
         Write-Output "Publishing Module Located In $($artifactModulePath) to the PSGallery"
-        Publish-Module -Path $artifactModulePath -NuGetApiKey $env:PSGalleryKey
+        Publish-Module -Path $artifactModulePath -NuGetApiKey $PSGalleryAPIKey
     }
     else
     {

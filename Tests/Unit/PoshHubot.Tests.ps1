@@ -30,6 +30,18 @@ $config = @"
   }
 }
 "@
+    Describe 'Stop-Hubot' {
+        BeforeEach {
+            Set-Content -Path "TestDrive:\config.json" -Value $config
+
+            Mock Start-Process { return $true }
+        }
+
+        It 'calls start-process to stop hubot'{
+            Stop-Hubot -ConfigPath "TestDrive:\config.json"
+            Assert-MockCalled Start-Process -Exactly 1 -ParameterFilter { $ArgumentList.StartsWith('/c forever stop') } -Scope It
+        }
+    }
 
     Describe 'Install-Hubot' {
 

@@ -108,7 +108,7 @@ function Start-Hubot
 
         $processParams = @{
             FilePath = 'cmd'
-            ArgumentList = "/c forever start --uid ""$($Config.BotName)"" --pidFile ""$($Config.PidPath)"" --verbose --append -l ""$($Config.LogPath)\$($fileDate)_$($Config.BotName).log"" --sourceDir ""$($Config.BotPath)"" --workingDir ""$($Config.BotPath)"" --minUptime 100 --spinSleepTime 100 .\node_modules\coffee-script\bin\coffee .\node_modules\hubot\bin\hubot $($Config.ArgumentList)"
+            ArgumentList = "/c forever start --uid ""$($Config.BotName)"" --pidFile ""$($Config.PidPath)"" --verbose --append -l ""$($Config.LogPath)\$($fileDate)_$($Config.BotName).log"" --sourceDir ""$($Config.BotPath)"" --workingDir ""$($Config.BotPath)"" --minUptime 100 --spinSleepTime 100 .\node_modules\coffeescript\bin\coffee .\node_modules\hubot\bin\hubot $($Config.ArgumentList)"
             NoNewWindow = $true
             WorkingDirectory = $Config.BotPath
             PassThru = $true

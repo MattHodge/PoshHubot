@@ -35,7 +35,7 @@
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
     Write-Verbose -Message "Installing CoffeeScript"
-    Start-Process -FilePath npm -ArgumentList "install -g coffee-script" -Wait -NoNewWindow
+    Start-Process -FilePath npm -ArgumentList "install -g coffeescript" -Wait -NoNewWindow
 
     Write-Verbose -Message "Installing Hubot Generator"
     Start-Process -FilePath npm -ArgumentList "install -g yo generator-hubot" -Wait -NoNewWindow

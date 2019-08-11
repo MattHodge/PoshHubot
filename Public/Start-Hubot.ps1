@@ -10,7 +10,7 @@
 #>
 function Start-Hubot
 {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
     Param
     (
         # Path to the PoshHubot Configuration File
@@ -95,20 +95,26 @@ function Start-Hubot
 
         # Do an npm install incase there are any new modules
         Write-Verbose -Message "Running npm install"
-        Start-Process -FilePath npm -ArgumentList "install" -Wait -NoNewWindow -WorkingDirectory $Config.BotPath
+        if ($PSCmdlet.ShouldProcess("ShouldProcess command: 'Start-Process -FilePath npm -ArgumentList ""install"" -Wait -NoNewWindow -WorkingDirectory $Config.BotPath'")) 
+        {
+            Start-Process -FilePath npm -ArgumentList "install" -Wait -NoNewWindow -WorkingDirectory $Config.BotPath
+        }
 
         # Add the environment variables from the config
         ForEach ($envVar in $Config.EnvironmentVariables.psobject.Properties)
         {
             Write-Verbose "Setting Environment Variable $($envVar.Name)"
-            New-Item -Path Env:\ -Name $envVar.Name -Value $envVar.Value -Force | Out-Null
+            if ($PSCmdlet.ShouldProcess("ShouldProcess command: 'New-Item -Path Env:\ -Name $envVar.Name -Value $envVar.Value -Force | Out-Null'.")) 
+            {
+                New-Item -Path Env:\ -Name $envVar.Name -Value $envVar.Value -Force | Out-Null
+            }
         }
 
         $fileDate = Get-Date -format yyyy-M-ddTHHmmss
 
         $processParams = @{
             FilePath = 'cmd'
-            ArgumentList = "/c forever start --uid ""$($Config.BotName)"" --pidFile ""$($Config.PidPath)"" --verbose --append -l ""$($Config.LogPath)\$($fileDate)_$($Config.BotName).log"" --sourceDir ""$($Config.BotPath)"" --workingDir ""$($Config.BotPath)"" --minUptime 100 --spinSleepTime 100 .\node_modules\coffee-script\bin\coffee .\node_modules\hubot\bin\hubot $($Config.ArgumentList)"
+            ArgumentList = "/c forever start --uid ""$($Config.BotName)"" --pidFile ""$($Config.PidPath)"" --verbose --append -l ""$($Config.LogPath)\$($fileDate)_$($Config.BotName).log"" --sourceDir ""$($Config.BotPath)"" --workingDir ""$($Config.BotPath)"" --minUptime 100 --spinSleepTime 100 .\node_modules\coffeescript\bin\coffee .\node_modules\hubot\bin\hubot $($Config.ArgumentList)"
             NoNewWindow = $true
             WorkingDirectory = $Config.BotPath
             PassThru = $true
@@ -117,23 +123,26 @@ function Start-Hubot
         Write-Verbose "Start Command:"
         Write-Verbose $processParams.ArgumentList
 
-        # Start Hubot
-        $proc = Start-Process @processParams
-
-        # Wait for the command prompt to close
-        $proc.WaitForExit()
-
-        # Wait a few seconds for pid to be created
-        Start-Sleep -Seconds 2
-
-        # Verify bot started ok by checking if the pid file exists
-        if (Test-HubotRunning -ConfigPath $ConfigPath)
+        
+        if ($PSCmdlet.ShouldProcess("ShouldProcess: Start Hubot and check that it is running.")) 
         {
-            return "Your bot $($Config.BotName) is running."
-        }
-        else
-        {
-            throw "Could not find pid file at $($Config.PidPath). Check $($Config.LogPath) for logs."
+            # Start Hubot
+            $proc = Start-Process @processParams
+            # Wait for the command prompt to close
+            $proc.WaitForExit()
+
+            # Wait a few seconds for pid to be created
+            Start-Sleep -Seconds 2
+
+            # Verify bot started ok by checking if the pid file exists
+            if (Test-HubotRunning -ConfigPath $ConfigPath)
+            {
+                return "Your bot $($Config.BotName) is running."
+            }
+            else
+            {
+                throw "Could not find pid file at $($Config.PidPath). Check $($Config.LogPath) for logs."
+            }
         }
     }
 }

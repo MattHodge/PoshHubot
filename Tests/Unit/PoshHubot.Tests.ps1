@@ -77,7 +77,7 @@ $config = @"
         }
 
         $npmInstalls = @(
-            'install -g coffee-script'
+            'install -g coffeescript'
             'install -g yo generator-hubot'
             'install -g forever'
         )
